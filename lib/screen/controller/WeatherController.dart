@@ -1,37 +1,49 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:weather/screen/helper/weatherapi.dart';
+import 'package:weather/screen/model/weatherdata.dart';
 
-import '../model/weatherdata.dart';
+class WeatherProvider extends ChangeNotifier {
+  Weather? weather;
+  DateTime dateTime = DateTime.now();
+  String name ='surat';
+  String? isClicked;
+  TextEditingController textEditingController = TextEditingController(text: 'surat');
+  List<Location> list = [];
 
-class WeatherController extends ChangeNotifier
-{
+  WeatherProvider() {
 
-  List <WeatherModel> weatherData =[];
-
-  List<WeatherModel>  get WeatherData => weatherData;
-
-  WeatherController()
-  {
-      getDate();
+    fetchData();
   }
 
+  Future<void> fetchData() async {
+    ApiSarvice apiService = ApiSarvice();
+    String? jsonData = await apiService.getData(isClicked ?? name);
+    if (jsonData != null) {
+      Map dataList = jsonDecode(jsonData);
+      weather = Weather.getData(dataList);
+      print(jsonData);
+      notifyListeners();
+      searchApi('surat');
+    }
+  }
 
-      Future<void>  getDate()
-  async {
-    String json = await ApiService().callApi('http://api.weatherapi.com/v1/current.json?key=ffe2b75e58e544fa9ff125903242406&q=surat&aqi=no');
-    List data  = await jsonDecode(json);
+  Future<void> searchApi(String name) async {
+    ApiSarvice apiService = ApiSarvice();
+    String? jsonData = await apiService.getSreachData(name);
+    if (jsonData != null) {
+      List dataList = jsonDecode(jsonData);
+      list = dataList.map((e) => Location.fromJson(e)).toList();
+      this.name = name;
+      notifyListeners();
+      print(list);
+    }
+  }
 
-
-    weatherData =data.map((e) => WeatherModel.fromJson(e)).toList();
+  void changeToController(String value) {
+    textEditingController.text = value;
     notifyListeners();
-
   }
-
-
-
-
 
 
 }

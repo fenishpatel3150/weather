@@ -1,23 +1,31 @@
-import 'dart:convert';
+import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
-import 'package:weather/screen/model/weatherdata.dart';
 
-
-class ApiService {
-
-  callApi(String url)
-  async {
-
-    final response = await http.get(Uri.parse(url));
+class ApiSarvice {
+  Future<String?> getData(String cityName) async {
+    String apidata =
+        'https://api.weatherapi.com/v1/forecast.json?key=9885c92eb56e4e0596d103301241906&q=$cityName}';
+    Uri uri = Uri.parse(apidata);
+    Response response = await http.get(uri);
     if (response.statusCode == 200) {
-      return WeatherModel.fromJson(jsonDecode(response.body));
+      print('Api Called');
+      return response.body;
     } else {
-      throw Exception('False');
+      return null;
     }
-
-
   }
 
-
-
+  Future<String?> getSreachData(String cityName) async {
+    String apidata =
+        'https://api.weatherapi.com/v1/search.json?key=9885c92eb56e4e0596d103301241906&q=$cityName';
+    Uri uri = Uri.parse(apidata);
+    Response response = await http.get(uri);
+    if (response.statusCode == 200) {
+      print('Api Called');
+      return response.body;
+    } else {
+      return null;
+    }
+  }
 }
+
